@@ -1,3 +1,7 @@
+import { Form } from "./Form"
+import { ListData } from "./ListData"
+import { staticGroups } from "./staticGroups"
+
 export const App = () => {
-	return <h1>Hello world</h1>
+	return <ListData groups={staticGroups} />
 }

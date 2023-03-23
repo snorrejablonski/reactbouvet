@@ -1,5 +1,8 @@
-import { useState } from "react"
+import internal from "stream"
 
+import { useMemo, useState } from "react"
+
+import { ListDataItem } from "./ListDataItem"
 import { Group } from "./staticGroups"
 
 export interface ListDataProps {
@@ -7,13 +10,35 @@ export interface ListDataProps {
 }
 
 export const ListData = ({ groups }: ListDataProps) => {
+	const [internalGroups, setInternalGroups] = useState(groups)
 	const [selectedGroup, setSelectedGroup] = useState<Group>()
+	const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc")
 
-	const selectGroup = (group: Group) => () => {
-		setSelectedGroup(group)
+	const sortedGroups = useMemo(() => {
+		const groupsToSort = internalGroups.slice(0)
+		groupsToSort.sort((a, b) => {
+			if (sortDirection === "asc") {
+				return a.name.localeCompare(b.name)
+			}
+			return b.name.localeCompare(a.name)
+		})
+		return groupsToSort
+	}, [internalGroups, sortDirection])
+
+	const selectGroup = (group: Group) => setSelectedGroup(group)
+
+	const deleteGroup = (group: Group) => {
+		const newGroupList = internalGroups.filter((aGroup) => group !== aGroup)
+		setInternalGroups(newGroupList)
 	}
 
-  groups.sort((a, b)) => a.name.localeCompare(b.name))
+	const toggleSortDirection = () => {
+		if (sortDirection === "asc") {
+			setSortDirection("desc")
+			return
+		}
+		setSortDirection("asc")
+	}
 
 	return (
 		<>
@@ -30,15 +55,16 @@ export const ListData = ({ groups }: ListDataProps) => {
 					<dd>{selectedGroup.description}</dd>
 				</dl>
 			)}
-
+			<button onClick={toggleSortDirection}>Sort direction: {sortDirection}</button>
 			<ol>
-				{groups.map((group) => (
-					<li
-						key={group.id}
-						onClick={selectGroup(group)}
-						style={{ fontWeight: group === selectedGroup ? "bold" : "normal" }}
-					>
-						{group.name} - {group.id}
+				{sortedGroups.map((group) => (
+					<li key={group.id}>
+						<ListDataItem
+							group={group}
+							isHighligthed={group === selectedGroup}
+							onSelect={selectGroup}
+							onDelete={deleteGroup}
+						/>
 					</li>
 				))}
 			</ol>

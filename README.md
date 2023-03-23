@@ -1,4 +1,4 @@
-# Practical React with Typescript
+# Practical React with Typescript - Snorre Edition
 
 The `main` branch contains the starter code you can clone to begin working with the respository. You can find the code we built together throughout the course in a separate `course/*` sub branch named the date of the first course day.
 
